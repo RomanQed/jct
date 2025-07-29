@@ -1,6 +1,4 @@
-# jct 
-
-[![jct](https://img.shields.io/maven-central/v/com.github.romanqed/jct?strategy=releaseProperty&style=for-the-badge&label=jct&color=blue)](https://repo1.maven.org/maven2/com/github/romanqed/jct)
+# jct [![jct](https://img.shields.io/maven-central/v/com.github.romanqed/jct?strategy=releaseProperty&style=for-the-badge&label=jct&color=blue)](https://repo1.maven.org/maven2/com/github/romanqed/jct)
 
 Lightweight Java implementation of an operation cancellation mechanism, similar to C#'s CancellationToken.
 Designed to be minimal, composable, and runtime-agnostic — works well with standard Java concurrency tools and third-party frameworks.
