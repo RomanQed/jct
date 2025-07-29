@@ -92,6 +92,21 @@ public final class Cancellation {
     }
 
     /**
+     * Creates a combined {@link CancelToken} from two tokens, which is considered cancelled
+     * when any of the constituent tokens is cancelled.
+     *
+     * @param first the first token to combine
+     * @param second the second token to combine
+     * @return a combined cancel token representing cancellation of any input token
+     */
+    public static CancelToken combinedToken(CancelToken first, CancelToken second) {
+        var future = new CompletableFuture<Void>();
+        first.onCancelled().thenRun(() -> future.complete(null));
+        second.onCancelled().thenRun(() -> future.complete(null));
+        return new CombinedPairCancelToken(first, second, new CompletableAwaitableStage<>(future));
+    }
+
+    /**
      * Creates a combined {@link CancelToken} from multiple tokens, which is considered cancelled
      * when any of the constituent tokens is cancelled.
      *
