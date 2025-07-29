@@ -26,7 +26,7 @@ To use this library, you will need:
 
 ```groovy
 dependencies {
-    implementation group: 'com.github.romanqed', name: 'jct', version: '1.0.0'
+    implementation group: 'com.github.romanqed', name: 'jct', version: '1.1.0'
 }
 ```
 
@@ -37,7 +37,7 @@ dependencies {
     <dependency>
         <groupId>com.github.romanqed</groupId>
         <artifactId>jct</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 </dependencies>
 ```
