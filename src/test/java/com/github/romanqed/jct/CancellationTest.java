@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public final class CancellationTest {
 
     @Test
-    void testEmptyCancelToken() {
+    public void testEmptyCancelToken() {
         var token = EmptyCancelToken.TOKEN;
 
         assertFalse(token.canceled());
@@ -24,7 +24,15 @@ public final class CancellationTest {
     }
 
     @Test
-    void testCompletableCancelToken() {
+    public void testCanceledToken() {
+        var token = Cancellation.canceledToken();
+        assertTrue(token.cancellable());
+        assertTrue(token.canceled());
+        assertThrows(CancellationException.class, token::checkCanceled);
+    }
+
+    @Test
+    public void testCompletableCancelToken() {
         var future = new CompletableFuture<Void>();
         var token = new CompletableCancelToken(future);
 
@@ -45,7 +53,7 @@ public final class CancellationTest {
     }
 
     @Test
-    void testCompletableCancelSourceCancel() {
+    public void testCompletableCancelSourceCancel() {
         var source = new CompletableCancelSource(CompletableFuture::new);
 
         CancelToken token = source.token();
@@ -65,7 +73,7 @@ public final class CancellationTest {
     }
 
     @Test
-    void testCompletableCancelSourceCancelAfter() throws InterruptedException {
+    public void testCompletableCancelSourceCancelAfter() throws InterruptedException {
         var source = new CompletableCancelSource(CompletableFuture::new);
 
         source.cancelAfter(50, TimeUnit.MILLISECONDS);
@@ -78,7 +86,7 @@ public final class CancellationTest {
     }
 
     @Test
-    void testCombinedArrayCancelToken() {
+    public void testCombinedArrayCancelToken() {
         var source1 = Cancellation.source();
         var source2 = Cancellation.source();
 
@@ -99,7 +107,7 @@ public final class CancellationTest {
     }
 
     @Test
-    void testCombinedCancelToken() {
+    public void testCombinedCancelToken() {
         var source1 = Cancellation.source();
         var source2 = Cancellation.source();
 
@@ -119,7 +127,7 @@ public final class CancellationTest {
 
     @Test
     @SuppressWarnings({"rawtypes", "unchecked"})
-    void testEmptyAwaitableStage() {
+    public void testEmptyAwaitableStage() {
         AwaitableStage stage = EmptyAwaitableStage.STAGE;
 
         assertThrows(IllegalStateException.class, stage::await);
@@ -129,7 +137,7 @@ public final class CancellationTest {
     }
 
     @Test
-    void testCancellationCombineAndCombinedMethods() {
+    public void testCancellationCombineAndCombinedMethods() {
         // Комбинируем два токена в один CancelSource
         var s1 = Cancellation.source();
         var s2 = Cancellation.source();
