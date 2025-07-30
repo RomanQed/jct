@@ -22,21 +22,79 @@ public final class Cancellation {
     }
 
     /**
-     * Creates a new {@link CancelSource} backed by a {@link CompletableFuture}.
-     *
-     * @return a new cancellable source instance
-     */
-    public static CancelSource source() {
-        return new CompletableCancelSource(CompletableFuture::new);
-    }
-
-    /**
      * Returns a shared empty {@link CancelToken} which is never cancellable or cancelled.
      *
      * @return a singleton empty cancel token
      */
     public static CancelToken emptyToken() {
         return EmptyCancelToken.TOKEN;
+    }
+
+    /**
+     * Returns a {@link CancelToken} instance that is already canceled.
+     * <p>
+     * This token reports {@code true} from {@link CancelToken#canceled()} immediately.
+     * It can be used to simulate cancellation or test cancellation behavior without
+     * waiting or external triggers.
+     *
+     * @return a {@link CancelToken} that is already canceled
+     */
+    public static CancelToken canceledToken() {
+        return new CompletableCancelToken(CompletableFuture.completedFuture(null));
+    }
+
+    /**
+     * Creates a combined {@link CancelToken} from multiple tokens, which is considered cancelled
+     * when any of the constituent tokens is cancelled.
+     *
+     * @param tokens the tokens to combine
+     * @return a combined cancel token representing cancellation of any input token
+     */
+    public static CancelToken combinedToken(CancelToken... tokens) {
+        var future = new CompletableFuture<Void>();
+        for (var token : tokens) {
+            token.onCancelled().thenRun(() -> future.complete(null));
+        }
+        return new CombinedArrayCancelToken(tokens, new CompletableAwaitableStage<>(future));
+    }
+
+    /**
+     * Creates a combined {@link CancelToken} from an iterable of tokens, which is considered cancelled
+     * when any of the constituent tokens is cancelled.
+     *
+     * @param tokens the tokens to combine
+     * @return a combined cancel token representing cancellation of any input token
+     */
+    public static CancelToken combinedToken(Iterable<CancelToken> tokens) {
+        var future = new CompletableFuture<Void>();
+        for (var token : tokens) {
+            token.onCancelled().thenRun(() -> future.complete(null));
+        }
+        return new CombinedCancelToken(tokens, new CompletableAwaitableStage<>(future));
+    }
+
+    /**
+     * Creates a combined {@link CancelToken} from two tokens, which is considered cancelled
+     * when any of the constituent tokens is cancelled.
+     *
+     * @param first  the first token to combine
+     * @param second the second token to combine
+     * @return a combined cancel token representing cancellation of any input token
+     */
+    public static CancelToken combinedToken(CancelToken first, CancelToken second) {
+        var future = new CompletableFuture<Void>();
+        first.onCancelled().thenRun(() -> future.complete(null));
+        second.onCancelled().thenRun(() -> future.complete(null));
+        return new CombinedPairCancelToken(first, second, new CompletableAwaitableStage<>(future));
+    }
+
+    /**
+     * Creates a new {@link CancelSource} backed by a {@link CompletableFuture}.
+     *
+     * @return a new cancellable source instance
+     */
+    public static CancelSource source() {
+        return new CompletableCancelSource(CompletableFuture::new);
     }
 
     /**
@@ -89,50 +147,5 @@ public final class Cancellation {
         var ret = new CompletableCancelSource(CompletableFuture::new);
         combine(ret, tokens);
         return ret;
-    }
-
-    /**
-     * Creates a combined {@link CancelToken} from two tokens, which is considered cancelled
-     * when any of the constituent tokens is cancelled.
-     *
-     * @param first the first token to combine
-     * @param second the second token to combine
-     * @return a combined cancel token representing cancellation of any input token
-     */
-    public static CancelToken combinedToken(CancelToken first, CancelToken second) {
-        var future = new CompletableFuture<Void>();
-        first.onCancelled().thenRun(() -> future.complete(null));
-        second.onCancelled().thenRun(() -> future.complete(null));
-        return new CombinedPairCancelToken(first, second, new CompletableAwaitableStage<>(future));
-    }
-
-    /**
-     * Creates a combined {@link CancelToken} from multiple tokens, which is considered cancelled
-     * when any of the constituent tokens is cancelled.
-     *
-     * @param tokens the tokens to combine
-     * @return a combined cancel token representing cancellation of any input token
-     */
-    public static CancelToken combinedToken(CancelToken... tokens) {
-        var future = new CompletableFuture<Void>();
-        for (var token : tokens) {
-            token.onCancelled().thenRun(() -> future.complete(null));
-        }
-        return new CombinedArrayCancelToken(tokens, new CompletableAwaitableStage<>(future));
-    }
-
-    /**
-     * Creates a combined {@link CancelToken} from an iterable of tokens, which is considered cancelled
-     * when any of the constituent tokens is cancelled.
-     *
-     * @param tokens the tokens to combine
-     * @return a combined cancel token representing cancellation of any input token
-     */
-    public static CancelToken combinedToken(Iterable<CancelToken> tokens) {
-        var future = new CompletableFuture<Void>();
-        for (var token : tokens) {
-            token.onCancelled().thenRun(() -> future.complete(null));
-        }
-        return new CombinedCancelToken(tokens, new CompletableAwaitableStage<>(future));
     }
 }
