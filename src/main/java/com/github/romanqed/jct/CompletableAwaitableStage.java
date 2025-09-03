@@ -31,7 +31,7 @@ public final class CompletableAwaitableStage<T> implements AwaitableStage<T> {
         try {
             return future.get();
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 
@@ -40,7 +40,7 @@ public final class CompletableAwaitableStage<T> implements AwaitableStage<T> {
         try {
             return future.get(timeout, TimeUnit.MILLISECONDS);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 
@@ -49,7 +49,7 @@ public final class CompletableAwaitableStage<T> implements AwaitableStage<T> {
         try {
             return future.get(timeout, unit);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 
@@ -61,7 +61,7 @@ public final class CompletableAwaitableStage<T> implements AwaitableStage<T> {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Await interrupted", e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 
@@ -73,7 +73,7 @@ public final class CompletableAwaitableStage<T> implements AwaitableStage<T> {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Await interrupted", e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 
@@ -85,7 +85,7 @@ public final class CompletableAwaitableStage<T> implements AwaitableStage<T> {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Await interrupted", e);
         } catch (ExecutionException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getCause());
         }
     }
 
